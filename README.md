@@ -3,8 +3,8 @@
 [![GoDoc](https://godoc.org/github.com/tmthrgd/go-shm?status.svg)](https://godoc.org/github.com/tmthrgd/go-shm)
 
 go-shm provides functions to open and unlink shared memory without relying on cgo (on Linux).
-It provides an implementation of [`shm\_open`](https://linux.die.net/man/3/shm_open) and
-[`shm\_unlink`](https://linux.die.net/man/3/shm_unlink) from `sys/mman.h`.
+It provides an implementation of [`shm_open`](https://linux.die.net/man/3/shm_open) and
+[`shm_unlink`](https://linux.die.net/man/3/shm_unlink) from `sys/mman.h`.
 
 ## Download
 
