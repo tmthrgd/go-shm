@@ -35,7 +35,7 @@ func Open(name string, flag int, perm os.FileMode) (*os.File, error) {
 	}
 
 	if len(name) == 0 {
-		return nil, unix.EINVAL
+		return nil, &os.PathError{Op: "open", Path: fileName, Err: unix.EINVAL}
 	}
 
 	o := uint32(perm.Perm())
@@ -51,7 +51,7 @@ func Open(name string, flag int, perm os.FileMode) (*os.File, error) {
 
 	fd, err := unix.Open(devShm+name, flag|unix.O_CLOEXEC, o)
 	if err != nil {
-		return nil, err
+		return nil, &os.PathError{Op: "open", Path: fileName, Err: err}
 	}
 
 	return os.NewFile(uintptr(fd), fileName), nil
@@ -65,13 +65,19 @@ func Open(name string, flag int, perm os.FileMode) (*os.File, error) {
 // 	object  with  the same name will fail (unless O_CREAT was specified, in
 // 	which case a new, distinct object is created).
 func Unlink(name string) error {
+	fileName := name
+
 	for len(name) != 0 && name[0] == '/' {
 		name = name[1:]
 	}
 
 	if len(name) == 0 {
-		return unix.EINVAL
+		return &os.PathError{Op: "unlink", Path: fileName, Err: unix.EINVAL}
 	}
 
-	return unix.Unlink(devShm + name)
+	if err := unix.Unlink(devShm + name); err != nil {
+		return &os.PathError{Op: "unlink", Path: fileName, Err: err}
+	}
+
+	return nil
 }

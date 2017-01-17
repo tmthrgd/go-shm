@@ -40,7 +40,7 @@ func Open(name string, flag int, perm os.FileMode) (*os.File, error) {
 
 	fd, err := C.shm_open(nameC, C.int(flag), C.mode_t(perm))
 	if err != nil {
-		return nil, err
+		return nil, &os.PathError{Op: "open", Path: name, Err: err}
 	}
 
 	return os.NewFile(uintptr(fd), name), nil
@@ -57,6 +57,9 @@ func Unlink(name string) error {
 	nameC := C.CString(name)
 	defer C.free(unsafe.Pointer(nameC))
 
-	_, err := C.shm_unlink(nameC)
-	return err
+	if _, err := C.shm_unlink(nameC); err != nil {
+		return &os.PathError{Op: "unlink", Path: name, Err: err}
+	}
+
+	return nil
 }
